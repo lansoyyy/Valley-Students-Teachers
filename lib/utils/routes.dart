@@ -1,8 +1,7 @@
 class Routes {
-  final homescreen = '/homescreen',
-      landingscreen = '/landingscreen',
-      facultyscreen = '/facultyscreen',
-      schedulescreen = '/schedulescreen',
-      availabilityscreen = '/availabilityscreen',
-      attendancescreen = '/attendancescreen';
+  final landingscreen = '/landingscreen',
+      studentsloginscreen = '/studentsloginscreen',
+      teachersloginscreen = '/teachersloginscreen',
+      studenthomescreen = '/studenthomescreen',
+      teacherhomescreen = '/teacherhomescreen';
 }

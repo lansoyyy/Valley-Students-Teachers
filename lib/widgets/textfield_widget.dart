@@ -36,7 +36,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextRegular(text: widget.label, fontSize: 12, color: Colors.black),
+        TextBold(text: widget.label, fontSize: 12, color: Colors.black),
         const SizedBox(
           height: 5,
         ),

@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:valley_students_and_teachers/widgets/textfield_widget.dart';
 
 import '../../utils/routes.dart';
 import '../../widgets/button_widget.dart';
 
-class LandingScreen extends StatelessWidget {
-  const LandingScreen({super.key});
+class TeachersLoginScreen extends StatefulWidget {
+  const TeachersLoginScreen({super.key});
 
+  @override
+  State<TeachersLoginScreen> createState() => _TeachersLoginScreenState();
+}
+
+class _TeachersLoginScreenState extends State<TeachersLoginScreen> {
+  final idcontroller = TextEditingController();
+  final passwordcontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,31 +49,30 @@ class LandingScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(
-                          height: 250,
+                          height: 200,
                         ),
-                        ButtonWidget(
-                          fontColor: Colors.black,
-                          radius: 100,
-                          height: 60,
-                          color: Colors.white,
-                          label: 'Students',
-                          onPressed: () {
-                            Navigator.pushNamed(
-                                context, Routes().studentsloginscreen);
-                          },
-                        ),
+                        TextFieldWidget(
+                            label: 'ID Number', controller: idcontroller),
                         const SizedBox(
-                          height: 20,
+                          height: 10,
+                        ),
+                        TextFieldWidget(
+                            isObscure: true,
+                            isPassword: true,
+                            label: 'Password',
+                            controller: passwordcontroller),
+                        const SizedBox(
+                          height: 50,
                         ),
                         ButtonWidget(
                           fontColor: Colors.black,
                           radius: 100,
                           height: 60,
                           color: Colors.white,
-                          label: 'Teachers',
+                          label: 'Login',
                           onPressed: () {
-                            Navigator.pushNamed(
-                                context, Routes().teachersloginscreen);
+                            Navigator.pushReplacementNamed(
+                                context, Routes().teacherhomescreen);
                           },
                         ),
                       ],
