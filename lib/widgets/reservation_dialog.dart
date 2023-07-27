@@ -1,0 +1,169 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+class ReservationDialog extends StatefulWidget {
+  const ReservationDialog({super.key});
+
+  @override
+  _ReservationDialogState createState() => _ReservationDialogState();
+}
+
+class _ReservationDialogState extends State<ReservationDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text(
+        'Make a Reservation',
+        style: TextStyle(
+          fontFamily: 'QRegular',
+          fontSize: 18,
+        ),
+      ),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: _nameController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a name for the reservation';
+                }
+                return null;
+              },
+              decoration: const InputDecoration(
+                labelText: 'Reservation Name',
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _selectedDate == null
+                      ? 'Select Date'
+                      : 'Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}',
+                  style: const TextStyle(
+                    fontFamily: 'QRegular',
+                    fontSize: 14,
+                  ),
+                ),
+                ElevatedButton(
+                  style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.black)),
+                  onPressed: () {
+                    _pickDate(context);
+                  },
+                  child: const Text(
+                    'Pick Date',
+                    style: TextStyle(
+                      fontFamily: 'QRegular',
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _selectedTime == null
+                      ? 'Select Time'
+                      : 'Time: ${_selectedTime!.format(context)}',
+                  style: const TextStyle(
+                    fontFamily: 'QRegular',
+                    fontSize: 14,
+                  ),
+                ),
+                ElevatedButton(
+                  style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.black)),
+                  onPressed: () {
+                    _pickTime(context);
+                  },
+                  child: const Text(
+                    'Pick Time',
+                    style: TextStyle(
+                      fontFamily: 'QRegular',
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text(
+            'Cancel',
+            style: TextStyle(
+                fontFamily: 'QRegular', fontSize: 14, color: Colors.black),
+          ),
+        ),
+        ElevatedButton(
+          style: const ButtonStyle(
+              backgroundColor: MaterialStatePropertyAll(Colors.black)),
+          onPressed: () {
+            if (_formKey.currentState!.validate() &&
+                _selectedDate != null &&
+                _selectedTime != null) {
+              String reservationName = _nameController.text;
+              String fullReservation =
+                  '$reservationName\nDate: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}\nTime: ${_selectedTime!.format(context)}';
+              // Here you can do something with the fullReservation string (e.g., save it to a database).
+              Navigator.of(context).pop();
+            }
+          },
+          child: const Text(
+            'Make Reservation',
+            style: TextStyle(
+              fontFamily: 'QRegular',
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickDate(BuildContext context) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
+
+  Future<void> _pickTime(BuildContext context) async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime ?? TimeOfDay.now(),
+    );
+
+    if (pickedTime != null && pickedTime != _selectedTime) {
+      setState(() {
+        _selectedTime = pickedTime;
+      });
+    }
+  }
+}

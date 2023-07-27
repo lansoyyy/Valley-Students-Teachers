@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:valley_students_and_teachers/widgets/reservation_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
 
 class StudentHomeScreen extends StatefulWidget {
@@ -200,13 +201,15 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   Align(
                     alignment: Alignment.topRight,
                     child: TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        createGroupDialog();
+                      },
                       icon: const Icon(
                         Icons.add,
                         color: Colors.black,
                       ),
                       label: TextBold(
-                        text: 'Add schedule',
+                        text: 'Create group',
                         fontSize: 16,
                         color: Colors.black,
                       ),
@@ -223,39 +226,126 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                             padding: const EdgeInsets.only(
                                 top: 10, bottom: 10, left: 20, right: 20),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
+                                const Icon(
+                                  Icons.chat,
+                                  size: 48,
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
                                 TextBold(
-                                    text: 'Mac Laboratory',
-                                    fontSize: 22,
+                                    text: 'Last Message here...',
+                                    fontSize: 16,
                                     color: Colors.black),
                                 const SizedBox(
                                   width: 50,
                                 ),
-                                TextBold(
-                                    text: 'BSIT 3B',
-                                    fontSize: 22,
+                                TextRegular(
+                                    text: 'Date and Time',
+                                    fontSize: 14,
                                     color: Colors.black),
                                 const SizedBox(
-                                  width: 50,
+                                  width: 30,
                                 ),
-                                TextBold(
-                                    text: 'Monday 8:30AM - 4:30PM',
-                                    fontSize: 22,
-                                    color: Colors.black),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.delete,
+                                  ),
+                                ),
                               ],
                             ),
                           );
                         },
                       ),
                     ),
-                  )
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  final searchController = TextEditingController();
+
+  String nameSearched = '';
+
+  createGroupDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Container(
+            height: 50,
+            width: 180,
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black,
+                ),
+                borderRadius: BorderRadius.circular(5)),
+            child: TextFormField(
+              onChanged: (value) {
+                setState(() {
+                  nameSearched = value;
+                });
+              },
+              decoration: const InputDecoration(
+                  hintText: 'Search member',
+                  hintStyle: TextStyle(fontFamily: 'QRegular'),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: Colors.grey,
+                  )),
+              controller: searchController,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(
+                  Icons.account_circle_outlined,
+                  size: 32,
+                ),
+                title: TextBold(
+                    text: 'John Doe', fontSize: 16, color: Colors.black),
+                trailing: TextRegular(
+                    text: 'BSIT - 2A', fontSize: 12, color: Colors.black),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: TextBold(
+                text: 'Close',
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: TextBold(
+                text: 'Create',
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -311,50 +401,70 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      TextBold(
-                        text: 'AVAILABLE',
-                        fontSize: 28,
-                        color: Colors.black,
+                  Expanded(
+                    child: SizedBox(
+                      child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10, bottom: 10, left: 20, right: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.calendar_month_outlined,
+                                  size: 48,
+                                ),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                TextBold(
+                                    text: 'Name of Reservation',
+                                    fontSize: 16,
+                                    color: Colors.black),
+                                const SizedBox(
+                                  width: 50,
+                                ),
+                                TextRegular(
+                                    text: 'Date and Time',
+                                    fontSize: 14,
+                                    color: Colors.black),
+                                const SizedBox(
+                                  width: 30,
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.delete,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextBold(
-                        text: 'Tommorow @3:30PM to 5:00PM',
-                        fontSize: 28,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextBold(
-                        text: 'You can come to my office @CS Office',
-                        fontSize: 28,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                    ],
+                    ),
                   ),
-                  const Expanded(child: SizedBox()),
                   Padding(
                     padding: const EdgeInsets.only(right: 20, bottom: 20),
                     child: Align(
                       alignment: Alignment.topRight,
                       child: TextButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const ReservationDialog();
+                            },
+                          );
+                        },
                         icon: const Icon(
-                          Icons.save,
+                          Icons.add,
                           color: Colors.black,
                         ),
                         label: TextBold(
-                          text: 'Save',
-                          fontSize: 24,
+                          text: 'Create',
+                          fontSize: 18,
                           color: Colors.black,
                         ),
                       ),
