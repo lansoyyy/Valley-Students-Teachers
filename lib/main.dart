@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:valley_students_and_teachers/screens/auth/landing_screen.dart';
 import 'package:valley_students_and_teachers/screens/auth/students_login_screen.dart';
@@ -6,7 +7,16 @@ import 'package:valley_students_and_teachers/screens/student_home_screen.dart';
 import 'package:valley_students_and_teachers/screens/teachers_home_screen.dart';
 import 'package:valley_students_and_teachers/utils/routes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          authDomain: 'valley-9b203.firebaseapp.com',
+          apiKey: "AIzaSyBYw1II0TSmA-HXeU1NJI1WF2xzyPFIhdQ",
+          appId: "1:354930278705:web:420cec9df723d977173010",
+          messagingSenderId: "354930278705",
+          projectId: "valley-9b203",
+          storageBucket: "valley-9b203.appspot.com"));
   runApp(const MyApp());
 }
 
