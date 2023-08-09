@@ -149,7 +149,7 @@ class _StudentsLoginScreenState extends State<StudentsLoginScreen> {
                               await FirebaseAuth.instance
                                   .createUserWithEmailAndPassword(
                                       email:
-                                          '${idnumberController.text}@valley.com',
+                                          '${idnumberController.text}@student.com',
                                       password: passwordController.text);
                               // addUser(
                               //     newNameController
@@ -160,7 +160,7 @@ class _StudentsLoginScreenState extends State<StudentsLoginScreen> {
                               //         .text);
                               addUser(
                                   nameController.text,
-                                  '${idnumberController.text}@valley.com',
+                                  '${idnumberController.text}@student.com',
                                   passwordController.text,
                                   'Student');
                               Navigator.pop(context);
@@ -193,7 +193,7 @@ class _StudentsLoginScreenState extends State<StudentsLoginScreen> {
   login() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: '${idcontroller.text}@valley.com',
+          email: '${idcontroller.text}@student.com',
           password: passwordcontroller.text);
 
       Navigator.pushReplacementNamed(context, Routes().studenthomescreen);
