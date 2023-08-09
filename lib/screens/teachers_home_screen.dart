@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:valley_students_and_teachers/widgets/schedule_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
 import 'package:valley_students_and_teachers/widgets/textfield_widget.dart';
 import 'package:valley_students_and_teachers/widgets/toast_widget.dart';
@@ -212,7 +213,14 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
                   Align(
                     alignment: Alignment.topRight,
                     child: TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return const ScheduleDialog();
+                          },
+                        );
+                      },
                       icon: const Icon(
                         Icons.add,
                         color: Colors.black,
@@ -227,41 +235,66 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Expanded(
-                    child: SizedBox(
-                      child: ListView.builder(
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                top: 10, bottom: 10, left: 20, right: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextBold(
-                                    text: 'Mac Laboratory',
-                                    fontSize: 22,
-                                    color: Colors.black),
-                                const SizedBox(
-                                  width: 50,
-                                ),
-                                TextBold(
-                                    text: 'BSIT 3B',
-                                    fontSize: 22,
-                                    color: Colors.black),
-                                const SizedBox(
-                                  width: 50,
-                                ),
-                                TextBold(
-                                    text: 'Monday 8:30AM - 4:30PM',
-                                    fontSize: 22,
-                                    color: Colors.black),
-                              ],
-                            ),
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('Schedules')
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          print(snapshot.error);
+                          return const Center(child: Text('Error'));
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 50),
+                            child: Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            )),
                           );
-                        },
-                      ),
-                    ),
-                  )
+                        }
+
+                        final data = snapshot.requireData;
+                        return Expanded(
+                          child: SizedBox(
+                            child: ListView.builder(
+                              itemCount: data.docs.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10, bottom: 10, left: 20, right: 20),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextBold(
+                                          text: data.docs[index]['name'],
+                                          fontSize: 22,
+                                          color: Colors.black),
+                                      const SizedBox(
+                                        width: 50,
+                                      ),
+                                      TextBold(
+                                          text: data.docs[index]['section'],
+                                          fontSize: 22,
+                                          color: Colors.black),
+                                      const SizedBox(
+                                        width: 50,
+                                      ),
+                                      TextBold(
+                                          text:
+                                              '${data.docs[index]['day']} ${data.docs[index]['timeFrom']} - ${data.docs[index]['timeTo']}',
+                                          fontSize: 22,
+                                          color: Colors.black),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      })
                 ],
               ),
             ),
