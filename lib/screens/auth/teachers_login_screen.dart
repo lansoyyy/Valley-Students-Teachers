@@ -196,7 +196,7 @@ class _TeachersLoginScreenState extends State<TeachersLoginScreen> {
           email: '${idcontroller.text}@teacher.com',
           password: passwordcontroller.text);
 
-      Navigator.pushReplacementNamed(context, Routes().studenthomescreen);
+      Navigator.pushReplacementNamed(context, Routes().teacherhomescreen);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

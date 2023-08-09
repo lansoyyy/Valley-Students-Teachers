@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
+import 'package:valley_students_and_teachers/widgets/textfield_widget.dart';
+import 'package:valley_students_and_teachers/widgets/toast_widget.dart';
 
 class TeachersHomeScreen extends StatefulWidget {
   const TeachersHomeScreen({super.key});
@@ -267,121 +271,136 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
     );
   }
 
+  final availController = TextEditingController();
+
+  final Stream<DocumentSnapshot> userData = FirebaseFirestore.instance
+      .collection('Users')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .snapshots();
   Widget availability() {
-    return SizedBox(
-      width: 800,
-      height: double.infinity,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Align(
-              alignment: Alignment.topRight,
-              child: PopupMenuButton(
-                icon: const Icon(
-                  Icons.notifications,
-                  color: Colors.black,
-                  size: 32,
-                ),
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                        child: ListTile(
-                      leading: const Icon(
+    return StreamBuilder<DocumentSnapshot>(
+        stream: userData,
+        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return const SizedBox(
+              width: 800,
+            );
+          } else if (snapshot.hasError) {
+            return const SizedBox(
+              width: 800,
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox(
+              width: 800,
+            );
+          }
+          dynamic data = snapshot.data;
+          availController.text = data['avail'];
+          return SizedBox(
+            width: 800,
+            height: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Align(
+                    alignment: Alignment.topRight,
+                    child: PopupMenuButton(
+                      icon: const Icon(
                         Icons.notifications,
                         color: Colors.black,
+                        size: 32,
                       ),
-                      title: TextBold(
-                          text: 'Name of Notification',
-                          fontSize: 16,
-                          color: Colors.black),
-                      subtitle: TextRegular(
-                          text: 'Date and Time',
-                          fontSize: 12,
-                          color: Colors.black),
-                    ))
-                  ];
-                },
-              )),
-          const SizedBox(
-            height: 20,
-          ),
-          TextBold(
-            text: 'Availability',
-            fontSize: 32,
-            color: Colors.black,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 50),
-            child: Container(
-              height: 300,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      TextBold(
-                        text: 'AVAILABLE',
-                        fontSize: 28,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextBold(
-                        text: 'Tommorow @3:30PM to 5:00PM',
-                        fontSize: 28,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextBold(
-                        text: 'You can come to my office @CS Office',
-                        fontSize: 28,
-                        color: Colors.black,
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                    ],
-                  ),
-                  const Expanded(child: SizedBox()),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 20, bottom: 20),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: TextButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.save,
-                          color: Colors.black,
+                      itemBuilder: (context) {
+                        return [
+                          PopupMenuItem(
+                              child: ListTile(
+                            leading: const Icon(
+                              Icons.notifications,
+                              color: Colors.black,
+                            ),
+                            title: TextBold(
+                                text: 'Name of Notification',
+                                fontSize: 16,
+                                color: Colors.black),
+                            subtitle: TextRegular(
+                                text: 'Date and Time',
+                                fontSize: 12,
+                                color: Colors.black),
+                          ))
+                        ];
+                      },
+                    )),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextBold(
+                  text: 'Availability',
+                  fontSize: 32,
+                  color: Colors.black,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 50),
+                  child: Container(
+                    height: 300,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
                         ),
-                        label: TextBold(
-                          text: 'Save',
-                          fontSize: 24,
-                          color: Colors.black,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            TextFieldWidget(
+                                label: '',
+                                controller: availController,
+                                height: 200,
+                                width: 400,
+                                maxLine: 5),
+                          ],
                         ),
-                      ),
+                        const Expanded(child: SizedBox()),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20, bottom: 20),
+                          child: Align(
+                            alignment: Alignment.topRight,
+                            child: TextButton.icon(
+                              onPressed: () async {
+                                await FirebaseFirestore.instance
+                                    .collection('Users')
+                                    .doc(data.id)
+                                    .update({
+                                  'avail': availController.text,
+                                });
+                                showToast('Saved Succesfully!');
+                              },
+                              icon: const Icon(
+                                Icons.save,
+                                color: Colors.black,
+                              ),
+                              label: TextBold(
+                                text: 'Save',
+                                fontSize: 24,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 }
