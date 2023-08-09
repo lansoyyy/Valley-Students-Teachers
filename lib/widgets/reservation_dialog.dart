@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:valley_students_and_teachers/services/add_reservation.dart';
 
 class ReservationDialog extends StatefulWidget {
   const ReservationDialog({super.key});
@@ -120,10 +121,10 @@ class _ReservationDialogState extends State<ReservationDialog> {
             if (_formKey.currentState!.validate() &&
                 _selectedDate != null &&
                 _selectedTime != null) {
-              String reservationName = _nameController.text;
-              String fullReservation =
-                  '$reservationName\nDate: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}\nTime: ${_selectedTime!.format(context)}';
-              // Here you can do something with the fullReservation string (e.g., save it to a database).
+              addReservation(
+                  _nameController.text,
+                  DateFormat('yyyy-MM-dd').format(_selectedDate!),
+                  _selectedTime!.format(context));
               Navigator.of(context).pop();
             }
           },

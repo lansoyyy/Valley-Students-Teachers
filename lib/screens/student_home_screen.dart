@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:valley_students_and_teachers/widgets/reservation_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
@@ -401,50 +402,81 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Expanded(
-                    child: SizedBox(
-                      child: ListView.builder(
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                top: 10, bottom: 10, left: 20, right: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const Icon(
-                                  Icons.calendar_month_outlined,
-                                  size: 48,
-                                ),
-                                const SizedBox(
-                                  width: 30,
-                                ),
-                                TextBold(
-                                    text: 'Name of Reservation',
-                                    fontSize: 16,
-                                    color: Colors.black),
-                                const SizedBox(
-                                  width: 50,
-                                ),
-                                TextRegular(
-                                    text: 'Date and Time',
-                                    fontSize: 14,
-                                    color: Colors.black),
-                                const SizedBox(
-                                  width: 30,
-                                ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.delete,
-                                  ),
-                                ),
-                              ],
-                            ),
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('Reservations')
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          print(snapshot.error);
+                          return const Center(child: Text('Error'));
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 50),
+                            child: Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            )),
                           );
-                        },
-                      ),
-                    ),
-                  ),
+                        }
+
+                        final data = snapshot.requireData;
+                        return Expanded(
+                          child: SizedBox(
+                            child: ListView.builder(
+                              itemCount: data.docs.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10, bottom: 10, left: 20, right: 20),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_month_outlined,
+                                        size: 48,
+                                      ),
+                                      const SizedBox(
+                                        width: 30,
+                                      ),
+                                      TextBold(
+                                          text: data.docs[index]['name'],
+                                          fontSize: 16,
+                                          color: Colors.black),
+                                      const SizedBox(
+                                        width: 50,
+                                      ),
+                                      TextRegular(
+                                          text: data.docs[index]['date'] +
+                                              ' ' +
+                                              data.docs[index]['time'],
+                                          fontSize: 14,
+                                          color: Colors.black),
+                                      const SizedBox(
+                                        width: 30,
+                                      ),
+                                      IconButton(
+                                        onPressed: () async {
+                                          await FirebaseFirestore.instance
+                                              .collection('Reservations')
+                                              .doc(data.docs[index].id)
+                                              .delete();
+                                        },
+                                        icon: const Icon(
+                                          Icons.delete,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      }),
                   Padding(
                     padding: const EdgeInsets.only(right: 20, bottom: 20),
                     child: Align(
