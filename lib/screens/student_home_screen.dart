@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:valley_students_and_teachers/widgets/reservation_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
@@ -405,6 +406,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('Reservations')
+                          .where('userId',
+                              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
                           .snapshots(),
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {

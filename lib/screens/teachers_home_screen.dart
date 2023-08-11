@@ -238,6 +238,8 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
                   StreamBuilder<QuerySnapshot>(
                       stream: FirebaseFirestore.instance
                           .collection('Schedules')
+                          .where('userId',
+                              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
                           .snapshots(),
                       builder: (BuildContext context,
                           AsyncSnapshot<QuerySnapshot> snapshot) {
