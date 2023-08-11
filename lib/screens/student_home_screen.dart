@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:valley_students_and_teachers/services/add_chatroom.dart';
 import 'package:valley_students_and_teachers/widgets/reservation_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
+import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
 
 class StudentHomeScreen extends StatefulWidget {
   const StudentHomeScreen({super.key});
@@ -280,73 +282,158 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
 
   String nameSearched = '';
 
+  List members = [];
+  List membersId = [];
+
   createGroupDialog() {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Container(
-            height: 50,
-            width: 180,
-            decoration: BoxDecoration(
-                border: Border.all(
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Container(
+              height: 50,
+              width: 180,
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                  ),
+                  borderRadius: BorderRadius.circular(5)),
+              child: TextFormField(
+                onChanged: (value) {
+                  setState(() {
+                    nameSearched = value;
+                  });
+                },
+                decoration: const InputDecoration(
+                    hintText: 'Search member',
+                    hintStyle: TextStyle(fontFamily: 'QRegular'),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.grey,
+                    )),
+                controller: searchController,
+              ),
+            ),
+            content: Column(
+              children: [
+                SizedBox(
+                  height: 180,
+                  width: 300,
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('Users')
+                          .where('name',
+                              isGreaterThanOrEqualTo:
+                                  toBeginningOfSentenceCase(nameSearched))
+                          .where('name',
+                              isLessThan:
+                                  '${toBeginningOfSentenceCase(nameSearched)}z')
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          print(snapshot.error);
+                          return const Center(child: Text('Error'));
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 50),
+                            child: Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            )),
+                          );
+                        }
+
+                        final data = snapshot.requireData;
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            for (int i = 0; i < data.docs.length; i++)
+                              ListTile(
+                                onTap: () {
+                                  if (membersId.contains(data.docs[i].id) ==
+                                      false) {
+                                    setState(
+                                      () {
+                                        members.add(data.docs[i]);
+                                        membersId.add(data.docs[i].id);
+                                      },
+                                    );
+                                  }
+                                },
+                                leading: const Icon(
+                                  Icons.account_circle_outlined,
+                                  size: 32,
+                                ),
+                                title: TextBold(
+                                    text: data.docs[i]['name'],
+                                    fontSize: 16,
+                                    color: Colors.black),
+                                trailing: TextRegular(
+                                    text: data.docs[i]['role'],
+                                    fontSize: 12,
+                                    color: Colors.black),
+                              ),
+                          ],
+                        );
+                      }),
+                ),
+                const Divider(),
+                SizedBox(
+                  height: 200,
+                  width: 300,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (int i = 0; i < members.length; i++)
+                        ListTile(
+                          leading: const Icon(
+                            Icons.account_circle_outlined,
+                            size: 32,
+                          ),
+                          title: TextBold(
+                              text: members[i]['name'],
+                              fontSize: 16,
+                              color: Colors.black),
+                          trailing: TextRegular(
+                              text: members[i]['role'],
+                              fontSize: 12,
+                              color: Colors.black),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  members.clear();
+                  Navigator.pop(context);
+                },
+                child: TextBold(
+                  text: 'Close',
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  addChatroom(members);
+                  Navigator.pop(context);
+                },
+                child: TextBold(
+                  text: 'Create',
+                  fontSize: 14,
                   color: Colors.black,
                 ),
-                borderRadius: BorderRadius.circular(5)),
-            child: TextFormField(
-              onChanged: (value) {
-                setState(() {
-                  nameSearched = value;
-                });
-              },
-              decoration: const InputDecoration(
-                  hintText: 'Search member',
-                  hintStyle: TextStyle(fontFamily: 'QRegular'),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Colors.grey,
-                  )),
-              controller: searchController,
-            ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(
-                  Icons.account_circle_outlined,
-                  size: 32,
-                ),
-                title: TextBold(
-                    text: 'John Doe', fontSize: 16, color: Colors.black),
-                trailing: TextRegular(
-                    text: 'BSIT - 2A', fontSize: 12, color: Colors.black),
               ),
             ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: TextBold(
-                text: 'Close',
-                fontSize: 14,
-                color: Colors.grey,
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: TextBold(
-                text: 'Create',
-                fontSize: 14,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        );
+          );
+        });
       },
     );
   }
