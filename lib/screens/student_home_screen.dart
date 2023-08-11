@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:valley_students_and_teachers/services/add_chatroom.dart';
 import 'package:valley_students_and_teachers/widgets/reservation_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
 import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
+
+import '../services/add_chatroom.dart';
 
 class StudentHomeScreen extends StatefulWidget {
   const StudentHomeScreen({super.key});
@@ -16,6 +17,16 @@ class StudentHomeScreen extends StatefulWidget {
 class _StudentHomeScreenState extends State<StudentHomeScreen> {
   bool isSchedule = true;
   bool isAvailability = false;
+  final Stream<DocumentSnapshot> userData = FirebaseFirestore.instance
+      .collection('Users')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .snapshots();
+
+  String myName = '';
+
+  String myId = '';
+
+  String myRole = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,114 +46,137 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              height: double.infinity,
-              width: 400,
-              decoration: const BoxDecoration(
-                color: Colors.black,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextBold(
-                    text: 'Welcome!',
-                    fontSize: 32,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  Image.asset(
-                    'assets/images/avatar.png',
-                    height: 125,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextBold(
-                    text: 'John Doe',
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextBold(
-                    text: '2020300527',
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isAvailability = false;
-                        isSchedule = true;
-                      });
-                    },
-                    child: Row(
+            StreamBuilder<DocumentSnapshot>(
+                stream: userData,
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox();
+                  } else if (snapshot.hasError) {
+                    return const SizedBox();
+                  } else if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const SizedBox();
+                  }
+                  dynamic data = snapshot.data;
+
+                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                    myName = data['name'];
+
+                    myRole = data['role'];
+                    myId = data.id;
+                    membersId.add(data.id);
+                  });
+                  return Container(
+                    height: double.infinity,
+                    width: 400,
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                    ),
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.email_outlined,
-                          color: isSchedule ? Colors.white : Colors.grey,
-                          size: 48,
+                        TextBold(
+                          text: 'Welcome!',
+                          fontSize: 32,
+                          color: Colors.white,
                         ),
                         const SizedBox(
-                          width: 20,
+                          height: 50,
+                        ),
+                        Image.asset(
+                          'assets/images/avatar.png',
+                          height: 125,
+                        ),
+                        const SizedBox(
+                          height: 20,
                         ),
                         TextBold(
-                          text: 'Consultation',
+                          text: data['name'],
                           fontSize: 24,
-                          color: isSchedule ? Colors.white : Colors.grey,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextBold(
+                          text: data['idNumber'],
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isAvailability = false;
+                              isSchedule = true;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.email_outlined,
+                                color: isSchedule ? Colors.white : Colors.grey,
+                                size: 48,
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              TextBold(
+                                text: 'Consultation',
+                                fontSize: 24,
+                                color: isSchedule ? Colors.white : Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 75, right: 75),
+                          child: Divider(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isAvailability = true;
+                              isSchedule = false;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.calendar_month_outlined,
+                                color:
+                                    isAvailability ? Colors.white : Colors.grey,
+                                size: 48,
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              TextBold(
+                                text: 'Reservation',
+                                fontSize: 24,
+                                color:
+                                    isAvailability ? Colors.white : Colors.grey,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 75, right: 75),
-                    child: Divider(
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isAvailability = true;
-                        isSchedule = false;
-                      });
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.calendar_month_outlined,
-                          color: isAvailability ? Colors.white : Colors.grey,
-                          size: 48,
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        TextBold(
-                          text: 'Reservation',
-                          fontSize: 24,
-                          color: isAvailability ? Colors.white : Colors.grey,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                  );
+                }),
             isSchedule ? consultation() : reservation(),
           ],
         ),
@@ -222,50 +256,92 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Expanded(
-                    child: SizedBox(
-                      child: ListView.builder(
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                top: 10, bottom: 10, left: 20, right: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const Icon(
-                                  Icons.chat,
-                                  size: 48,
-                                ),
-                                const SizedBox(
-                                  width: 30,
-                                ),
-                                TextBold(
-                                    text: 'Last Message here...',
-                                    fontSize: 16,
-                                    color: Colors.black),
-                                const SizedBox(
-                                  width: 50,
-                                ),
-                                TextRegular(
-                                    text: 'Date and Time',
-                                    fontSize: 14,
-                                    color: Colors.black),
-                                const SizedBox(
-                                  width: 30,
-                                ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.delete,
-                                  ),
-                                ),
-                              ],
-                            ),
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('Chats')
+                          .where('membersId',
+                              arrayContains:
+                                  FirebaseAuth.instance.currentUser!.uid)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          print(snapshot.error);
+                          return const Center(child: Text('Error'));
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 50),
+                            child: Center(
+                                child: CircularProgressIndicator(
+                              color: Colors.black,
+                            )),
                           );
-                        },
-                      ),
-                    ),
-                  ),
+                        }
+
+                        final data = snapshot.requireData;
+                        return Expanded(
+                          child: SizedBox(
+                            child: ListView.builder(
+                              itemCount: data.docs.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10, bottom: 10, left: 20, right: 20),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(
+                                        Icons.chat,
+                                        size: 48,
+                                      ),
+                                      const SizedBox(
+                                        width: 30,
+                                      ),
+                                      TextBold(
+                                          text: data.docs[index]['messages']
+                                                  .isNotEmpty
+                                              ? data.docs[index]['messages'][
+                                                  data.docs[index]['messages']
+                                                          .length -
+                                                      1]['message']
+                                              : 'No message yet...',
+                                          fontSize: 16,
+                                          color: Colors.black),
+                                      const SizedBox(
+                                        width: 50,
+                                      ),
+                                      TextRegular(
+                                          text: DateFormat.yMMMd()
+                                              .add_jm()
+                                              .format(data.docs[index]
+                                                      ['dateTime']
+                                                  .toDate()),
+                                          fontSize: 14,
+                                          color: Colors.black),
+                                      const SizedBox(
+                                        width: 30,
+                                      ),
+                                      IconButton(
+                                        onPressed: () async {
+                                          await FirebaseFirestore.instance
+                                              .collection('Chats')
+                                              .doc(data.docs[index].id)
+                                              .delete();
+                                        },
+                                        icon: const Icon(
+                                          Icons.delete,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      }),
                   const SizedBox(
                     height: 20,
                   ),
@@ -352,31 +428,39 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             for (int i = 0; i < data.docs.length; i++)
-                              ListTile(
-                                onTap: () {
-                                  if (membersId.contains(data.docs[i].id) ==
-                                      false) {
-                                    setState(
-                                      () {
-                                        members.add(data.docs[i]);
-                                        membersId.add(data.docs[i].id);
+                              data.docs[i].id !=
+                                      FirebaseAuth.instance.currentUser!.uid
+                                  ? ListTile(
+                                      onTap: () {
+                                        if (membersId
+                                                .contains(data.docs[i].id) ==
+                                            false) {
+                                          setState(
+                                            () {
+                                              members.add({
+                                                'name': data.docs[i]['name'],
+                                                'role': data.docs[i]['role'],
+                                                'userId': data.docs[i].id,
+                                              });
+                                              membersId.add(data.docs[i].id);
+                                            },
+                                          );
+                                        }
                                       },
-                                    );
-                                  }
-                                },
-                                leading: const Icon(
-                                  Icons.account_circle_outlined,
-                                  size: 32,
-                                ),
-                                title: TextBold(
-                                    text: data.docs[i]['name'],
-                                    fontSize: 16,
-                                    color: Colors.black),
-                                trailing: TextRegular(
-                                    text: data.docs[i]['role'],
-                                    fontSize: 12,
-                                    color: Colors.black),
-                              ),
+                                      leading: const Icon(
+                                        Icons.account_circle_outlined,
+                                        size: 32,
+                                      ),
+                                      title: TextBold(
+                                          text: data.docs[i]['name'],
+                                          fontSize: 16,
+                                          color: Colors.black),
+                                      trailing: TextRegular(
+                                          text: data.docs[i]['role'],
+                                          fontSize: 12,
+                                          color: Colors.black),
+                                    )
+                                  : const SizedBox(),
                           ],
                         );
                       }),
@@ -398,10 +482,20 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                               text: members[i]['name'],
                               fontSize: 16,
                               color: Colors.black),
-                          trailing: TextRegular(
+                          subtitle: TextRegular(
                               text: members[i]['role'],
                               fontSize: 12,
                               color: Colors.black),
+                          trailing: IconButton(
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    membersId.removeAt(i);
+                                    members.removeAt(i);
+                                  },
+                                );
+                              },
+                              icon: const Icon(Icons.remove)),
                         ),
                     ],
                   ),
@@ -422,15 +516,25 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
               ),
               TextButton(
                 onPressed: () {
-                  addChatroom(members);
+                  setState(
+                    () {
+                      members.add({
+                        'name': myName,
+                        'role': myRole,
+                        'userId': myId,
+                      });
+                    },
+                  );
+                  addChatroom(members, membersId);
                   Navigator.pop(context);
+                  members.clear();
                 },
                 child: TextBold(
                   text: 'Create',
                   fontSize: 14,
                   color: Colors.black,
                 ),
-              ),
+              )
             ],
           );
         });
