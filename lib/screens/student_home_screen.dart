@@ -291,7 +291,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                       top: 10, bottom: 10, left: 20, right: 20),
                                   child: GestureDetector(
                                     onTap: () {
-                                      chatroomDialog();
+                                      chatroomDialog(data.docs[index].id);
                                     },
                                     child: Row(
                                       mainAxisAlignment:
@@ -711,7 +711,9 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
     );
   }
 
-  chatroomDialog() {
+  final msgController = TextEditingController();
+
+  chatroomDialog(String docId) {
     showDialog(
       context: context,
       builder: (context) {
@@ -723,17 +725,37 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
               padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
               child: Column(
                 children: [
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.close,
-                        color: Colors.red,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      PopupMenuButton(
+                        icon: const Icon(
+                          Icons.groups_2_outlined,
+                          color: Colors.grey,
+                        ),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            child: ListTile(
+                              leading: const Icon(Icons.person),
+                              title: TextRegular(
+                                text: 'John Doe',
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
                   ),
                   const Divider(),
                   Expanded(
@@ -769,10 +791,32 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   const Divider(),
                   Align(
                     alignment: Alignment.bottomCenter,
-                    child: Container(
-                      height: 50,
-                      width: double.infinity,
-                      color: Colors.black,
+                    child: TextFormField(
+                      controller: msgController,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('Chats')
+                                .doc(docId)
+                                .update({
+                              'messages': FieldValue.arrayUnion([
+                                {
+                                  'name': myName,
+                                  'userId': myId,
+                                  'msg': msgController.text,
+                                  'date': DateTime.now(),
+                                }
+                              ]),
+                            });
+                            msgController.clear();
+                          },
+                          icon: const Icon(
+                            Icons.send,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
