@@ -736,6 +736,37 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                     ),
                   ),
                   const Divider(),
+                  Expanded(
+                    child: SizedBox(
+                      child: ListView.separated(
+                        itemCount: 50,
+                        separatorBuilder: (context, index) {
+                          return const Divider();
+                        },
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: const Icon(Icons.message),
+                            title: TextRegular(
+                              text: 'Message here...',
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                            subtitle: TextRegular(
+                              text: 'John Doe',
+                              fontSize: 12,
+                              color: Colors.black,
+                            ),
+                            trailing: TextRegular(
+                              text: 'Date and Time',
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  const Divider(),
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Container(
