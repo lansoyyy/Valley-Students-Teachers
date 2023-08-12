@@ -16,6 +16,17 @@ class TeachersHomeScreen extends StatefulWidget {
 class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
   bool isSchedule = true;
   bool isAvailability = false;
+
+  final Stream<DocumentSnapshot> userData = FirebaseFirestore.instance
+      .collection('Users')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .snapshots();
+
+  String myName = '';
+
+  String myId = '';
+
+  String myRole = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,114 +46,129 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              height: double.infinity,
-              width: 400,
-              decoration: const BoxDecoration(
-                color: Colors.black,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextBold(
-                    text: 'Welcome!',
-                    fontSize: 32,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  Image.asset(
-                    'assets/images/avatar.png',
-                    height: 125,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextBold(
-                    text: 'John Doe',
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  TextBold(
-                    text: '2020300527',
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isAvailability = false;
-                        isSchedule = true;
-                      });
-                    },
-                    child: Row(
+            StreamBuilder<DocumentSnapshot>(
+                stream: userData,
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox();
+                  } else if (snapshot.hasError) {
+                    return const SizedBox();
+                  } else if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const SizedBox();
+                  }
+                  dynamic data = snapshot.data;
+                  return Container(
+                    height: double.infinity,
+                    width: 400,
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                    ),
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.calendar_month_outlined,
-                          color: isSchedule ? Colors.white : Colors.grey,
-                          size: 48,
+                        TextBold(
+                          text: 'Welcome!',
+                          fontSize: 32,
+                          color: Colors.white,
                         ),
                         const SizedBox(
-                          width: 20,
+                          height: 50,
+                        ),
+                        Image.asset(
+                          'assets/images/avatar.png',
+                          height: 125,
+                        ),
+                        const SizedBox(
+                          height: 20,
                         ),
                         TextBold(
-                          text: 'Schedule',
+                          text: data['name'],
                           fontSize: 24,
-                          color: isSchedule ? Colors.white : Colors.grey,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextBold(
+                          text: data['idNumber'].split('@')[0],
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isAvailability = false;
+                              isSchedule = true;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.calendar_month_outlined,
+                                color: isSchedule ? Colors.white : Colors.grey,
+                                size: 48,
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              TextBold(
+                                text: 'Schedule',
+                                fontSize: 24,
+                                color: isSchedule ? Colors.white : Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 75, right: 75),
+                          child: Divider(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isAvailability = true;
+                              isSchedule = false;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                color:
+                                    isAvailability ? Colors.white : Colors.grey,
+                                size: 48,
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              TextBold(
+                                text: 'Availability',
+                                fontSize: 24,
+                                color:
+                                    isAvailability ? Colors.white : Colors.grey,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 75, right: 75),
-                    child: Divider(
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isAvailability = true;
-                        isSchedule = false;
-                      });
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.schedule,
-                          color: isAvailability ? Colors.white : Colors.grey,
-                          size: 48,
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        TextBold(
-                          text: 'Availability',
-                          fontSize: 24,
-                          color: isAvailability ? Colors.white : Colors.grey,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                  );
+                }),
             isSchedule ? schedule() : availability(),
           ],
         ),
@@ -308,10 +334,6 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
 
   final availController = TextEditingController();
 
-  final Stream<DocumentSnapshot> userData = FirebaseFirestore.instance
-      .collection('Users')
-      .doc(FirebaseAuth.instance.currentUser!.uid)
-      .snapshots();
   Widget availability() {
     return StreamBuilder<DocumentSnapshot>(
         stream: userData,

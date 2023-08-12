@@ -100,7 +100,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                           height: 10,
                         ),
                         TextBold(
-                          text: data['idNumber'],
+                          text: data['idNumber'].split('@')[0],
                           fontSize: 18,
                           color: Colors.white,
                         ),
@@ -797,11 +797,9 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                     color: Colors.black,
                                   ),
                                   trailing: TextRegular(
-                                    text:  DateFormat.yMMMd()
-                                                .add_jm()
-                                                .format(msgs[index]
-                                                        ['date']
-                                                    .toDate()),
+                                    text: DateFormat.yMMMd()
+                                        .add_jm()
+                                        .format(msgs[index]['date'].toDate()),
                                     fontSize: 12,
                                     color: Colors.grey,
                                   ),
@@ -826,7 +824,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                               'messages': FieldValue.arrayUnion([
                                 {
                                   'name': myName,
-                                  'userId': myId,
+                                  'userId':
+                                      FirebaseAuth.instance.currentUser!.uid,
                                   'msg': msgController.text,
                                   'date': DateTime.now(),
                                 }
