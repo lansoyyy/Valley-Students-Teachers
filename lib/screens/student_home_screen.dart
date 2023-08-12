@@ -289,52 +289,58 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                 return Padding(
                                   padding: const EdgeInsets.only(
                                       top: 10, bottom: 10, left: 20, right: 20),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Icon(
-                                        Icons.chat,
-                                        size: 48,
-                                      ),
-                                      const SizedBox(
-                                        width: 30,
-                                      ),
-                                      TextBold(
-                                          text: data.docs[index]['messages']
-                                                  .isNotEmpty
-                                              ? data.docs[index]['messages'][
-                                                  data.docs[index]['messages']
-                                                          .length -
-                                                      1]['message']
-                                              : 'No message yet...',
-                                          fontSize: 16,
-                                          color: Colors.black),
-                                      const SizedBox(
-                                        width: 50,
-                                      ),
-                                      TextRegular(
-                                          text: DateFormat.yMMMd()
-                                              .add_jm()
-                                              .format(data.docs[index]
-                                                      ['dateTime']
-                                                  .toDate()),
-                                          fontSize: 14,
-                                          color: Colors.black),
-                                      const SizedBox(
-                                        width: 30,
-                                      ),
-                                      IconButton(
-                                        onPressed: () async {
-                                          await FirebaseFirestore.instance
-                                              .collection('Chats')
-                                              .doc(data.docs[index].id)
-                                              .delete();
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      chatroomDialog();
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Icon(
+                                          Icons.chat,
+                                          size: 48,
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(
+                                          width: 30,
+                                        ),
+                                        TextBold(
+                                            text: data.docs[index]['messages']
+                                                    .isNotEmpty
+                                                ? data.docs[index]['messages'][
+                                                    data.docs[index]['messages']
+                                                            .length -
+                                                        1]['message']
+                                                : 'No message yet...',
+                                            fontSize: 16,
+                                            color: Colors.black),
+                                        const SizedBox(
+                                          width: 50,
+                                        ),
+                                        TextRegular(
+                                            text: DateFormat.yMMMd()
+                                                .add_jm()
+                                                .format(data.docs[index]
+                                                        ['dateTime']
+                                                    .toDate()),
+                                            fontSize: 14,
+                                            color: Colors.black),
+                                        const SizedBox(
+                                          width: 30,
+                                        ),
+                                        IconButton(
+                                          onPressed: () async {
+                                            await FirebaseFirestore.instance
+                                                .collection('Chats')
+                                                .doc(data.docs[index].id)
+                                                .delete();
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -702,6 +708,48 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  chatroomDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: SizedBox(
+            height: 500,
+            width: 400,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                  const Divider(),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: 50,
+                      width: double.infinity,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
