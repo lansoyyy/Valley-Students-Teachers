@@ -310,7 +310,7 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                                 ? data.docs[index]['messages'][
                                                     data.docs[index]['messages']
                                                             .length -
-                                                        1]['message']
+                                                        1]['msg']
                                                 : 'No message yet...',
                                             fontSize: 16,
                                             color: Colors.black),
@@ -714,6 +714,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
   final msgController = TextEditingController();
 
   chatroomDialog(String docId) {
+    final Stream<DocumentSnapshot> chatrooms =
+        FirebaseFirestore.instance.collection('Chats').doc(docId).snapshots();
     showDialog(
       context: context,
       builder: (context) {
@@ -758,36 +760,57 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                     ],
                   ),
                   const Divider(),
-                  Expanded(
-                    child: SizedBox(
-                      child: ListView.separated(
-                        itemCount: 50,
-                        separatorBuilder: (context, index) {
-                          return const Divider();
-                        },
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            leading: const Icon(Icons.message),
-                            title: TextRegular(
-                              text: 'Message here...',
-                              fontSize: 16,
-                              color: Colors.black,
+                  StreamBuilder<DocumentSnapshot>(
+                      stream: chatrooms,
+                      builder:
+                          (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Expanded(child: SizedBox());
+                        } else if (snapshot.hasError) {
+                          return const Expanded(child: SizedBox());
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox();
+                        }
+                        dynamic data = snapshot.data;
+                        List msgs = data['messages'];
+
+                        return Expanded(
+                          child: SizedBox(
+                            child: ListView.separated(
+                              itemCount: msgs.length,
+                              separatorBuilder: (context, index) {
+                                return const Divider();
+                              },
+                              itemBuilder: (context, index) {
+                                print(msgs[index]['date']);
+                                return ListTile(
+                                  leading: const Icon(Icons.message),
+                                  title: TextRegular(
+                                    text: msgs[index]['msg'],
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                  subtitle: TextRegular(
+                                    text: msgs[index]['name'],
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
+                                  trailing: TextRegular(
+                                    text:  DateFormat.yMMMd()
+                                                .add_jm()
+                                                .format(msgs[index]
+                                                        ['date']
+                                                    .toDate()),
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                );
+                              },
                             ),
-                            subtitle: TextRegular(
-                              text: 'John Doe',
-                              fontSize: 12,
-                              color: Colors.black,
-                            ),
-                            trailing: TextRegular(
-                              text: 'Date and Time',
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
+                          ),
+                        );
+                      }),
                   const Divider(),
                   Align(
                     alignment: Alignment.bottomCenter,
