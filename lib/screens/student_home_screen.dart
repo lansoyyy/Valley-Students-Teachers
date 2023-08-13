@@ -196,6 +196,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   .collection('Chats')
                   .where('membersId',
                       arrayContains: FirebaseAuth.instance.currentUser!.uid)
+                  .where('creator',
+                      isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -233,21 +235,26 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                         return [
                           for (int i = 0; i < data.docs.length; i++)
                             PopupMenuItem(
+                                onTap: () {
+                                  chatroomDialog(data.docs[i].id);
+                                  chatroomDialog(data.docs[i].id);
+                                },
                                 child: ListTile(
-                              leading: const Icon(
-                                Icons.notifications,
-                                color: Colors.black,
-                              ),
-                              title: TextBold(
-                                  text: 'You have been added to a consultation',
-                                  fontSize: 16,
-                                  color: Colors.black),
-                              subtitle: TextRegular(
-                                  text: DateFormat.yMMMd().add_jm().format(
-                                      data.docs[i]['dateTime'].toDate()),
-                                  fontSize: 12,
-                                  color: Colors.black),
-                            ))
+                                  leading: const Icon(
+                                    Icons.notifications,
+                                    color: Colors.black,
+                                  ),
+                                  title: TextBold(
+                                      text:
+                                          'You have been added to a consultation',
+                                      fontSize: 16,
+                                      color: Colors.black),
+                                  subtitle: TextRegular(
+                                      text: DateFormat.yMMMd().add_jm().format(
+                                          data.docs[i]['dateTime'].toDate()),
+                                      fontSize: 12,
+                                      color: Colors.black),
+                                ))
                         ];
                       },
                     ));
@@ -593,6 +600,8 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                   .collection('Chats')
                   .where('membersId',
                       arrayContains: FirebaseAuth.instance.currentUser!.uid)
+                  .where('creator',
+                      isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -630,21 +639,26 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                         return [
                           for (int i = 0; i < data.docs.length; i++)
                             PopupMenuItem(
+                                onTap: () {
+                                  chatroomDialog(data.docs[i].id);
+                                  chatroomDialog(data.docs[i].id);
+                                },
                                 child: ListTile(
-                              leading: const Icon(
-                                Icons.notifications,
-                                color: Colors.black,
-                              ),
-                              title: TextBold(
-                                  text: 'You have been added to a consultation',
-                                  fontSize: 16,
-                                  color: Colors.black),
-                              subtitle: TextRegular(
-                                  text: DateFormat.yMMMd().add_jm().format(
-                                      data.docs[i]['dateTime'].toDate()),
-                                  fontSize: 12,
-                                  color: Colors.black),
-                            ))
+                                  leading: const Icon(
+                                    Icons.notifications,
+                                    color: Colors.black,
+                                  ),
+                                  title: TextBold(
+                                      text:
+                                          'You have been added to a consultation',
+                                      fontSize: 16,
+                                      color: Colors.black),
+                                  subtitle: TextRegular(
+                                      text: DateFormat.yMMMd().add_jm().format(
+                                          data.docs[i]['dateTime'].toDate()),
+                                      fontSize: 12,
+                                      color: Colors.black),
+                                ))
                         ];
                       },
                     ));
@@ -849,7 +863,6 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                                 return const Divider();
                               },
                               itemBuilder: (context, index) {
-                                print(msgs[index]['date']);
                                 return ListTile(
                                   leading: const Icon(Icons.message),
                                   title: TextRegular(

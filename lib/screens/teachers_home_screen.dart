@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:valley_students_and_teachers/widgets/schedule_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
 import 'package:valley_students_and_teachers/widgets/textfield_widget.dart';
@@ -183,34 +184,74 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Align(
-              alignment: Alignment.topRight,
-              child: PopupMenuButton(
-                icon: const Icon(
-                  Icons.notifications,
-                  color: Colors.black,
-                  size: 32,
-                ),
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                        child: ListTile(
-                      leading: const Icon(
-                        Icons.notifications,
-                        color: Colors.black,
+          StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('Chats')
+                  .where('membersId',
+                      arrayContains: FirebaseAuth.instance.currentUser!.uid)
+                  .where('creator',
+                      isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return const Center(child: Text('Error'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 50),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.black,
+                    )),
+                  );
+                }
+
+                final data = snapshot.requireData;
+                return Align(
+                    alignment: Alignment.topRight,
+                    child: PopupMenuButton(
+                      icon: Badge(
+                        backgroundColor: Colors.red,
+                        label: TextRegular(
+                            text: data.docs.length.toString(),
+                            fontSize: 14,
+                            color: Colors.white),
+                        child: const Icon(
+                          Icons.notifications,
+                          color: Colors.black,
+                          size: 32,
+                        ),
                       ),
-                      title: TextBold(
-                          text: 'Name of Notification',
-                          fontSize: 16,
-                          color: Colors.black),
-                      subtitle: TextRegular(
-                          text: 'Date and Time',
-                          fontSize: 12,
-                          color: Colors.black),
-                    ))
-                  ];
-                },
-              )),
+                      itemBuilder: (context) {
+                        return [
+                          for (int i = 0; i < data.docs.length; i++)
+                            PopupMenuItem(
+                                onTap: () {
+                                  chatroomDialog(data.docs[i].id);
+                                  chatroomDialog(data.docs[i].id);
+                                },
+                                child: ListTile(
+                                  leading: const Icon(
+                                    Icons.notifications,
+                                    color: Colors.black,
+                                  ),
+                                  title: TextBold(
+                                      text:
+                                          'You have been added to a consultation',
+                                      fontSize: 16,
+                                      color: Colors.black),
+                                  subtitle: TextRegular(
+                                      text: DateFormat.yMMMd().add_jm().format(
+                                          data.docs[i]['dateTime'].toDate()),
+                                      fontSize: 12,
+                                      color: Colors.black),
+                                ))
+                        ];
+                      },
+                    ));
+              }),
           const SizedBox(
             height: 20,
           ),
@@ -343,6 +384,7 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
               width: 800,
             );
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return const SizedBox(
               width: 800,
             );
@@ -359,34 +401,78 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Align(
-                    alignment: Alignment.topRight,
-                    child: PopupMenuButton(
-                      icon: const Icon(
-                        Icons.notifications,
-                        color: Colors.black,
-                        size: 32,
-                      ),
-                      itemBuilder: (context) {
-                        return [
-                          PopupMenuItem(
-                              child: ListTile(
-                            leading: const Icon(
-                              Icons.notifications,
-                              color: Colors.black,
+                StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('Chats')
+                        .where('membersId',
+                            arrayContains:
+                                FirebaseAuth.instance.currentUser!.uid)
+                        .where('creator',
+                            isNotEqualTo:
+                                FirebaseAuth.instance.currentUser!.uid)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        print(snapshot.error);
+                        return const Center(child: Text('Error'));
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Padding(
+                          padding: EdgeInsets.only(top: 50),
+                          child: Center(
+                              child: CircularProgressIndicator(
+                            color: Colors.black,
+                          )),
+                        );
+                      }
+
+                      final data = snapshot.requireData;
+                      return Align(
+                          alignment: Alignment.topRight,
+                          child: PopupMenuButton(
+                            icon: Badge(
+                              backgroundColor: Colors.red,
+                              label: TextRegular(
+                                  text: data.docs.length.toString(),
+                                  fontSize: 14,
+                                  color: Colors.white),
+                              child: const Icon(
+                                Icons.notifications,
+                                color: Colors.black,
+                                size: 32,
+                              ),
                             ),
-                            title: TextBold(
-                                text: 'Name of Notification',
-                                fontSize: 16,
-                                color: Colors.black),
-                            subtitle: TextRegular(
-                                text: 'Date and Time',
-                                fontSize: 12,
-                                color: Colors.black),
-                          ))
-                        ];
-                      },
-                    )),
+                            itemBuilder: (context) {
+                              return [
+                                for (int i = 0; i < data.docs.length; i++)
+                                  PopupMenuItem(
+                                      onTap: () {
+                                        chatroomDialog(data.docs[i].id);
+                                        chatroomDialog(data.docs[i].id);
+                                      },
+                                      child: ListTile(
+                                        leading: const Icon(
+                                          Icons.notifications,
+                                          color: Colors.black,
+                                        ),
+                                        title: TextBold(
+                                            text:
+                                                'You have been added to a consultation',
+                                            fontSize: 16,
+                                            color: Colors.black),
+                                        subtitle: TextRegular(
+                                            text: DateFormat.yMMMd()
+                                                .add_jm()
+                                                .format(data.docs[i]['dateTime']
+                                                    .toDate()),
+                                            fontSize: 12,
+                                            color: Colors.black),
+                                      ))
+                              ];
+                            },
+                          ));
+                    }),
                 const SizedBox(
                   height: 20,
                 ),
@@ -459,5 +545,143 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
             ),
           );
         });
+  }
+
+  final msgController = TextEditingController();
+
+  chatroomDialog(String docId) {
+    final Stream<DocumentSnapshot> chatrooms =
+        FirebaseFirestore.instance.collection('Chats').doc(docId).snapshots();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: SizedBox(
+            height: 500,
+            width: 400,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      PopupMenuButton(
+                        icon: const Icon(
+                          Icons.groups_2_outlined,
+                          color: Colors.grey,
+                        ),
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            child: ListTile(
+                              leading: const Icon(Icons.person),
+                              title: TextRegular(
+                                text: 'John Doe',
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  StreamBuilder<DocumentSnapshot>(
+                      stream: chatrooms,
+                      builder:
+                          (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Expanded(child: SizedBox());
+                        } else if (snapshot.hasError) {
+                          return const Expanded(child: SizedBox());
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const SizedBox();
+                        }
+                        dynamic data = snapshot.data;
+                        List msgs = data['messages'];
+
+                        return Expanded(
+                          child: SizedBox(
+                            child: ListView.separated(
+                              itemCount: msgs.length,
+                              separatorBuilder: (context, index) {
+                                return const Divider();
+                              },
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  leading: const Icon(Icons.message),
+                                  title: TextRegular(
+                                    text: msgs[index]['msg'],
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                  subtitle: TextRegular(
+                                    text: msgs[index]['name'],
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  ),
+                                  trailing: TextRegular(
+                                    text: DateFormat.yMMMd()
+                                        .add_jm()
+                                        .format(msgs[index]['date'].toDate()),
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      }),
+                  const Divider(),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: TextFormField(
+                      controller: msgController,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('Chats')
+                                .doc(docId)
+                                .update({
+                              'messages': FieldValue.arrayUnion([
+                                {
+                                  'name': myName,
+                                  'userId':
+                                      FirebaseAuth.instance.currentUser!.uid,
+                                  'msg': msgController.text,
+                                  'date': DateTime.now(),
+                                }
+                              ]),
+                            });
+                            msgController.clear();
+                          },
+                          icon: const Icon(
+                            Icons.send,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
