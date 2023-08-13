@@ -191,34 +191,67 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Align(
-              alignment: Alignment.topRight,
-              child: PopupMenuButton(
-                icon: const Icon(
-                  Icons.notifications,
-                  color: Colors.black,
-                  size: 32,
-                ),
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                        child: ListTile(
-                      leading: const Icon(
-                        Icons.notifications,
-                        color: Colors.black,
+          StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('Chats')
+                  .where('membersId',
+                      arrayContains: FirebaseAuth.instance.currentUser!.uid)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return const Center(child: Text('Error'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 50),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.black,
+                    )),
+                  );
+                }
+
+                final data = snapshot.requireData;
+                return Align(
+                    alignment: Alignment.topRight,
+                    child: PopupMenuButton(
+                      icon: Badge(
+                        backgroundColor: Colors.red,
+                        label: TextRegular(
+                            text: data.docs.length.toString(),
+                            fontSize: 14,
+                            color: Colors.white),
+                        child: const Icon(
+                          Icons.notifications,
+                          color: Colors.black,
+                          size: 32,
+                        ),
                       ),
-                      title: TextBold(
-                          text: 'Name of Notification',
-                          fontSize: 16,
-                          color: Colors.black),
-                      subtitle: TextRegular(
-                          text: 'Date and Time',
-                          fontSize: 12,
-                          color: Colors.black),
-                    ))
-                  ];
-                },
-              )),
+                      itemBuilder: (context) {
+                        return [
+                          for (int i = 0; i < data.docs.length; i++)
+                            PopupMenuItem(
+                                child: ListTile(
+                              leading: const Icon(
+                                Icons.notifications,
+                                color: Colors.black,
+                              ),
+                              title: TextBold(
+                                  text: 'You have been added to a consultation',
+                                  fontSize: 16,
+                                  color: Colors.black),
+                              subtitle: TextRegular(
+                                  text: DateFormat.yMMMd().add_jm().format(
+                                      data.docs[i]['dateTime'].toDate()),
+                                  fontSize: 12,
+                                  color: Colors.black),
+                            ))
+                        ];
+                      },
+                    ));
+              }),
           const SizedBox(
             height: 20,
           ),
@@ -555,34 +588,67 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Align(
-              alignment: Alignment.topRight,
-              child: PopupMenuButton(
-                icon: const Icon(
-                  Icons.notifications,
-                  color: Colors.black,
-                  size: 32,
-                ),
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                        child: ListTile(
-                      leading: const Icon(
-                        Icons.notifications,
-                        color: Colors.black,
+          StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('Chats')
+                  .where('membersId',
+                      arrayContains: FirebaseAuth.instance.currentUser!.uid)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return const Center(child: Text('Error'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 50),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.black,
+                    )),
+                  );
+                }
+
+                final data = snapshot.requireData;
+                return Align(
+                    alignment: Alignment.topRight,
+                    child: PopupMenuButton(
+                      icon: Badge(
+                        backgroundColor: Colors.red,
+                        label: TextRegular(
+                            text: data.docs.length.toString(),
+                            fontSize: 14,
+                            color: Colors.white),
+                        child: const Icon(
+                          Icons.notifications,
+                          color: Colors.black,
+                          size: 32,
+                        ),
                       ),
-                      title: TextBold(
-                          text: 'Name of Notification',
-                          fontSize: 16,
-                          color: Colors.black),
-                      subtitle: TextRegular(
-                          text: 'Date and Time',
-                          fontSize: 12,
-                          color: Colors.black),
-                    ))
-                  ];
-                },
-              )),
+                      itemBuilder: (context) {
+                        return [
+                          for (int i = 0; i < data.docs.length; i++)
+                            PopupMenuItem(
+                                child: ListTile(
+                              leading: const Icon(
+                                Icons.notifications,
+                                color: Colors.black,
+                              ),
+                              title: TextBold(
+                                  text: 'You have been added to a consultation',
+                                  fontSize: 16,
+                                  color: Colors.black),
+                              subtitle: TextRegular(
+                                  text: DateFormat.yMMMd().add_jm().format(
+                                      data.docs[i]['dateTime'].toDate()),
+                                  fontSize: 12,
+                                  color: Colors.black),
+                            ))
+                        ];
+                      },
+                    ));
+              }),
           const SizedBox(
             height: 20,
           ),
