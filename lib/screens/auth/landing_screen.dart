@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:valley_students_and_teachers/widgets/text_widget.dart';
 
 import '../../utils/routes.dart';
 import '../../widgets/button_widget.dart';
+import '../../widgets/textfield_widget.dart';
 
-class LandingScreen extends StatelessWidget {
+class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
+
+  @override
+  State<LandingScreen> createState() => _LandingScreenState();
+}
+
+class _LandingScreenState extends State<LandingScreen> {
+  final passController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +75,54 @@ class LandingScreen extends StatelessWidget {
                           onPressed: () {
                             Navigator.pushNamed(
                                 context, Routes().teachersloginscreen);
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ButtonWidget(
+                          fontColor: Colors.black,
+                          radius: 100,
+                          height: 60,
+                          color: Colors.white,
+                          label: 'Admin',
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: TextRegular(
+                                    color: Colors.black,
+                                    text: 'Enter Admin Password',
+                                    fontSize: 18,
+                                  ),
+                                  content: SizedBox(
+                                    height: 100,
+                                    child: TextFieldWidget(
+                                        label: 'Password',
+                                        isObscure: true,
+                                        controller: passController),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        // Navigator.of(context).pushReplacement(
+                                        //     MaterialPageRoute(
+                                        //         builder: (context) =>
+                                        //             const AdminHomeScreen()));
+                                      },
+                                      child: TextRegular(
+                                        text: 'Continue',
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            // Navigator.pushNamed(
+                            //     context, Routes().teachersloginscreen);
                           },
                         ),
                       ],
