@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
+import 'package:valley_students_and_teachers/widgets/toast_widget.dart';
 
 import '../../utils/routes.dart';
 import '../../widgets/button_widget.dart';
@@ -106,6 +107,15 @@ class _LandingScreenState extends State<LandingScreen> {
                                   actions: [
                                     TextButton(
                                       onPressed: () {
+                                        if (passController.text ==
+                                            'admin-password') {
+                                          Navigator.pop(context);
+                                          Navigator.pushNamed(
+                                              context, Routes().adminhome);
+                                        } else {
+                                          Navigator.pop(context);
+                                          showToast('Invalid admin password!');
+                                        }
                                         // Navigator.of(context).pushReplacement(
                                         //     MaterialPageRoute(
                                         //         builder: (context) =>

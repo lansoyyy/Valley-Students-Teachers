@@ -1,5 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:valley_students_and_teachers/screens/admin/admin_home.dart';
+import 'package:valley_students_and_teachers/screens/admin/admin_students_screen.dart';
+import 'package:valley_students_and_teachers/screens/admin/admin_teachers_screen.dart';
 import 'package:valley_students_and_teachers/screens/auth/landing_screen.dart';
 import 'package:valley_students_and_teachers/screens/auth/students_login_screen.dart';
 import 'package:valley_students_and_teachers/screens/auth/teachers_login_screen.dart';
@@ -34,6 +37,9 @@ class MyApp extends StatelessWidget {
         Routes().teachersloginscreen: (context) => const TeachersLoginScreen(),
         Routes().studenthomescreen: (context) => const StudentHomeScreen(),
         Routes().teacherhomescreen: (context) => const TeachersHomeScreen(),
+        Routes().adminhome: (context) => const AdminHome(),
+        Routes().adminstudent: (context) => const AdminStudentsScreen(),
+        Routes().adminteacher: (context) => const AdminTeachersScreen()
       },
     );
   }

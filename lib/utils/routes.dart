@@ -3,5 +3,8 @@ class Routes {
       studentsloginscreen = '/studentsloginscreen',
       teachersloginscreen = '/teachersloginscreen',
       studenthomescreen = '/studenthomescreen',
-      teacherhomescreen = '/teacherhomescreen';
+      teacherhomescreen = '/teacherhomescreen',
+      adminhome = '/adminhome',
+      adminstudent = '/adminstudent',
+      adminteacher = '/adminteacher';
 }
