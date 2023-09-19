@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Valley - Students and Teachers',
+      title: 'Valley - Admin, Students and Teachers',
       home: const LandingScreen(),
       routes: {
         Routes().landingscreen: (context) => const LandingScreen(),
