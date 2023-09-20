@@ -70,7 +70,7 @@ class _AdminHomeState extends State<AdminHome> {
                           color: Colors.white,
                           label: 'Teachers',
                           onPressed: () {
-                            Navigator.pushNamed(context, Routes().adminteacher);
+                            Navigator.pushNamed(context, Routes().mainhome);
                           },
                         ),
                       ],

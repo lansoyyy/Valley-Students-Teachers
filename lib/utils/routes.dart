@@ -6,5 +6,9 @@ class Routes {
       teacherhomescreen = '/teacherhomescreen',
       adminhome = '/adminhome',
       adminstudent = '/adminstudent',
-      adminteacher = '/adminteacher';
+      adminteacher = '/adminteacher',
+      facultyscreen = '/facultyscreen',
+      schedulescreen = '/schedulescreen',
+      availabilityscreen = '/availabilityscreen',
+      mainhome = '/mainhome';
 }
