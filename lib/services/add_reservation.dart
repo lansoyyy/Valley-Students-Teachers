@@ -10,6 +10,7 @@ Future addReservation(name, date, time) async {
     'time': time,
     'userId': FirebaseAuth.instance.currentUser!.uid,
     'dateTime': DateTime.now(),
+    'status': 'Pending'
   };
 
   await docUser.set(json);
