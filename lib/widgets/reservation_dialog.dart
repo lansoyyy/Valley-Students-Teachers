@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:valley_students_and_teachers/services/add_reservation.dart';
 
 class ReservationDialog extends StatefulWidget {
@@ -125,6 +126,12 @@ class _ReservationDialogState extends State<ReservationDialog> {
                   _nameController.text,
                   DateFormat('yyyy-MM-dd').format(_selectedDate!),
                   _selectedTime!.format(context));
+
+              launchEmail(
+                  mailPath: 'roseanntejanoo3021@gmail.com',
+                  body:
+                      'Reservation Name: ${_nameController.text}\nI wanted to make a reservation on ${DateFormat('yyyy-MM-dd').format(_selectedDate!)} at _selectedTime!.format(context))',
+                  subject: 'Requesting a reservation');
               Navigator.of(context).pop();
             }
           },
@@ -138,6 +145,20 @@ class _ReservationDialogState extends State<ReservationDialog> {
         ),
       ],
     );
+  }
+
+  void launchEmail(
+      {String? subject, String? body, required String mailPath}) async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: mailPath,
+      queryParameters: {'subject': subject ?? '', 'body': body ?? ''},
+    );
+    if (await canLaunchUrlString(emailLaunchUri.toString())) {
+      await launchUrlString(emailLaunchUri.toString());
+    } else {
+      throw 'Could not launch email';
+    }
   }
 
   Future<void> _pickDate(BuildContext context) async {
