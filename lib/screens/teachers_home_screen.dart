@@ -1,7 +1,10 @@
+import 'package:cell_calendar/cell_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:valley_students_and_teachers/widgets/add_event_dialog.dart';
+import 'package:valley_students_and_teachers/widgets/event_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/schedule_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
 import 'package:valley_students_and_teachers/widgets/textfield_widget.dart';
@@ -15,8 +18,36 @@ class TeachersHomeScreen extends StatefulWidget {
 }
 
 class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    getEvents();
+  }
+
+  List<CalendarEvent> events = [];
+  bool hasLoaded = false;
+
+  getEvents() async {
+    await FirebaseFirestore.instance
+        .collection('Events')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        events.add(CalendarEvent(
+            eventName: doc['name'],
+            eventDate: doc['date'].toDate(),
+            eventTextStyle: const TextStyle(fontFamily: 'Bold')));
+      }
+
+      setState(() {
+        hasLoaded = true;
+      });
+    });
+  }
+
   bool isSchedule = true;
   bool isAvailability = false;
+  bool isworkLoad = false;
 
   final Stream<DocumentSnapshot> userData = FirebaseFirestore.instance
       .collection('Users')
@@ -31,6 +62,19 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: isworkLoad
+          ? FloatingActionButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const AddEventDialog();
+                  },
+                );
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -105,6 +149,7 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
                             setState(() {
                               isAvailability = false;
                               isSchedule = true;
+                              isworkLoad = false;
                             });
                           },
                           child: Row(
@@ -143,6 +188,7 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
                             setState(() {
                               isAvailability = true;
                               isSchedule = false;
+                              isworkLoad = false;
                             });
                           },
                           child: Row(
@@ -166,11 +212,54 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 75, right: 75),
+                          child: Divider(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isAvailability = false;
+                              isSchedule = false;
+                              isworkLoad = true;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.work,
+                                color: isworkLoad ? Colors.white : Colors.grey,
+                                size: 48,
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              TextBold(
+                                text: 'Workload',
+                                fontSize: 24,
+                                color: isworkLoad ? Colors.white : Colors.grey,
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   );
                 }),
-            isSchedule ? schedule() : availability(),
+            isSchedule
+                ? schedule()
+                : isworkLoad
+                    ? workload()
+                    : availability(),
           ],
         ),
       ),
@@ -682,6 +771,63 @@ class _TeachersHomeScreenState extends State<TeachersHomeScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget workload() {
+    return Center(
+      child: SizedBox(
+        width: 500,
+        height: 500,
+        child: CellCalendar(
+          events: events,
+          onCellTapped: (date) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('Events')
+                        .where('year', isEqualTo: date.year)
+                        .where('month', isEqualTo: date.month)
+                        .where('day', isEqualTo: date.day)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        print('error');
+                        return const Center(child: Text('Error'));
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Padding(
+                          padding: EdgeInsets.only(top: 50),
+                          child: Center(
+                              child: CircularProgressIndicator(
+                            color: Colors.black,
+                          )),
+                        );
+                      }
+
+                      final data = snapshot.requireData;
+                      return EventDialog(
+                        events: [
+                          for (int i = 0; i < data.docs.length; i++)
+                            {
+                              'title': data.docs[i]['name'],
+                              'date': DateFormat.yMMMd()
+                                  .add_jm()
+                                  .format(data.docs[i]['date'].toDate()),
+                              'id': data.docs[i].id,
+                              'details': data.docs[i]['details'],
+                            },
+                        ],
+                      );
+                    });
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }

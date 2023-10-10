@@ -45,6 +45,7 @@ dependencies:
   badges:
   get_storage:
   url_launcher:
+  cell_calendar:
 
 dev_dependencies:
   flutter_test:
