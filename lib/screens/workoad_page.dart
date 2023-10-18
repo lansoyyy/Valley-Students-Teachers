@@ -60,58 +60,61 @@ class _WorkloadScreenState extends State<WorkloadScreen> {
             ),
           ),
           child: Center(
-            child: SizedBox(
-              width: 500,
-              height: 500,
-              child: CellCalendar(
-                events: events,
-                onCellTapped: (date) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('Events')
-                              .where('year', isEqualTo: date.year)
-                              .where('month', isEqualTo: date.month)
-                              .where('day', isEqualTo: date.day)
-                              .where('userId', isEqualTo: box.read('id'))
-                              .snapshots(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (snapshot.hasError) {
-                              print('error');
-                              return const Center(child: Text('Error'));
-                            }
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Padding(
-                                padding: EdgeInsets.only(top: 50),
-                                child: Center(
-                                    child: CircularProgressIndicator(
-                                  color: Colors.black,
-                                )),
-                              );
-                            }
+            child: Card(
+              child: SizedBox(
+                width: 500,
+                height: 500,
+                child: CellCalendar(
+                  events: events,
+                  onCellTapped: (date) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('Events')
+                                .where('year', isEqualTo: date.year)
+                                .where('month', isEqualTo: date.month)
+                                .where('day', isEqualTo: date.day)
+                                .where('userId', isEqualTo: box.read('id'))
+                                .snapshots(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.hasError) {
+                                print('error');
+                                return const Center(child: Text('Error'));
+                              }
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Padding(
+                                  padding: EdgeInsets.only(top: 50),
+                                  child: Center(
+                                      child: CircularProgressIndicator(
+                                    color: Colors.black,
+                                  )),
+                                );
+                              }
 
-                            final data = snapshot.requireData;
-                            return EventDialog(
-                              events: [
-                                for (int i = 0; i < data.docs.length; i++)
-                                  {
-                                    'title': data.docs[i]['name'],
-                                    'date': DateFormat.yMMMd()
-                                        .add_jm()
-                                        .format(data.docs[i]['date'].toDate()),
-                                    'id': data.docs[i].id,
-                                    'details': data.docs[i]['details'],
-                                  },
-                              ],
-                            );
-                          });
-                    },
-                  );
-                },
+                              final data = snapshot.requireData;
+                              return EventDialog(
+                                events: [
+                                  for (int i = 0; i < data.docs.length; i++)
+                                    {
+                                      'title': data.docs[i]['name'],
+                                      'date': DateFormat.yMMMd()
+                                          .add_jm()
+                                          .format(
+                                              data.docs[i]['date'].toDate()),
+                                      'id': data.docs[i].id,
+                                      'details': data.docs[i]['details'],
+                                    },
+                                ],
+                              );
+                            });
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           )),
