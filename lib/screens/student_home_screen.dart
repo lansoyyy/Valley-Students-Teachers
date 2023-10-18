@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:valley_students_and_teachers/utils/routes.dart';
+import 'package:valley_students_and_teachers/widgets/button_widget.dart';
 import 'package:valley_students_and_teachers/widgets/reservation_dialog.dart';
 import 'package:valley_students_and_teachers/widgets/text_widget.dart';
 import 'package:intl/intl.dart' show DateFormat, toBeginningOfSentenceCase;
@@ -172,6 +174,24 @@ class _StudentHomeScreenState extends State<StudentHomeScreen> {
                               ),
                             ],
                           ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 75, right: 75),
+                          child: Divider(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ButtonWidget(
+                          label: 'View Faculty Workload',
+                          onPressed: () {
+                            Navigator.pushNamed(context, Routes().teacherlist);
+                          },
                         ),
                       ],
                     ),

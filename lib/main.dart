@@ -12,6 +12,8 @@ import 'package:valley_students_and_teachers/screens/auth/students_login_screen.
 import 'package:valley_students_and_teachers/screens/auth/teachers_login_screen.dart';
 import 'package:valley_students_and_teachers/screens/student_home_screen.dart';
 import 'package:valley_students_and_teachers/screens/teachers_home_screen.dart';
+import 'package:valley_students_and_teachers/screens/teachers_list.dart';
+import 'package:valley_students_and_teachers/screens/workoad_page.dart';
 import 'package:valley_students_and_teachers/utils/routes.dart';
 
 void main() async {
@@ -47,7 +49,9 @@ class MyApp extends StatelessWidget {
         Routes().availabilityscreen: (context) => AvailabilityScreen(),
         Routes().facultyscreen: (context) => FacultyScreen(),
         Routes().schedulescreen: (context) => ScheduleScreen(),
-        Routes().mainhome: (context) => MainHomeScreen()
+        Routes().mainhome: (context) => MainHomeScreen(),
+        Routes().teacherlist: (context) => TeachersListScreen(),
+        Routes().workload: (context) => WorkloadScreen()
       },
     );
   }

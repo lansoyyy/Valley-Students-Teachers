@@ -10,5 +10,7 @@ class Routes {
       facultyscreen = '/facultyscreen',
       schedulescreen = '/schedulescreen',
       availabilityscreen = '/availabilityscreen',
-      mainhome = '/mainhome';
+      mainhome = '/mainhome',
+      teacherlist = '/teacherlist',
+      workload = '/workload';
 }
